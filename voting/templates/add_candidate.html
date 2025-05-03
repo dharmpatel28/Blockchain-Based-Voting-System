@@ -1,0 +1,120 @@
+<title> Add Candidates </title>
+<form method="post" action="{% url 'add_candidate' %}" class="candidate-form">
+    {% csrf_token %}
+    <h2>Add Candidate</h2>
+    
+    <label for="party_name">Party Name:</label>
+    <input type="text" name="party_name" id="party_name" class="input-field" required>
+
+    <button type="submit" class="submit-btn">Add Candidate</button>
+</form>
+
+<!-- Advanced CSS Styling -->
+<style>
+    /* Body styling */
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(45deg, #ff6f61, #d56fbb);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #fff;
+    }
+
+    /* Form styling */
+    .candidate-form {
+        width: 100%;
+        max-width: 500px;
+        padding: 40px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .candidate-form h2 {
+        color: #333;
+        font-size: 28px;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    /* Label styling */
+    .candidate-form label {
+        display: block;
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    /* Input field styling */
+    .candidate-form .input-field {
+        width: 100%;
+        padding: 15px;
+        margin-bottom: 25px;
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        font-size: 16px;
+        background-color: #f4f4f4;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .candidate-form .input-field:focus {
+        border-color: #ff6f61;
+        background-color: #fff;
+        box-shadow: 0 0 12px rgba(255, 111, 97, 0.4);
+        outline: none;
+    }
+
+    /* Submit button styling */
+    .candidate-form .submit-btn {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(45deg, #ff6f61, #d56fbb);
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: transform 0.3s ease, background 0.3s ease;
+        letter-spacing: 1px;
+    }
+
+    .candidate-form .submit-btn:hover {
+        transform: translateY(-5px);
+        background: linear-gradient(45deg, #d56fbb, #ff6f61);
+    }
+
+    .candidate-form .submit-btn:active {
+        transform: translateY(0);
+        background: #ff6f61;
+    }
+
+    .candidate-form .submit-btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    /* Input field placeholder styling */
+    .candidate-form .input-field::placeholder {
+        color: #bbb;
+    }
+
+    /* Optional: Add spacing and hover effects on form elements */
+    .candidate-form .input-field:hover {
+        border-color: #ff6f61;
+    }
+
+    /* Optional: Input field focus effects */
+    .candidate-form .input-field:focus {
+        box-shadow: 0 0 12px rgba(255, 111, 97, 0.4);
+        border-color: #ff6f61;
+    }
+</style>

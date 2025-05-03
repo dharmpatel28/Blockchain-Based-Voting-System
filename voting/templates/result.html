@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Election Results</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #f0c674;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        th {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: #ffebcd;
+        }
+
+        .alert {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Button styling */
+        .homepage-btn {
+            display: block;
+            width: 200px;
+            margin: 30px auto;
+            padding: 12px;
+            background-color: #f0c674;
+            color: #203a43;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .homepage-btn:hover {
+            background-color: #e1b247;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Election Results</h1>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% if winner %}
+            <h2>Winner: {{ winner }}</h2>
+        {% endif %}
+
+        {% if party_votes %}
+            <h3>Party Votes</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Party</th>
+                        <th>Votes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for party in party_votes %}
+                        <tr>
+                            <td>{{ party.name }}</td>
+                            <td>{{ party.votes }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+        <!-- Homepage button -->
+        <a href="{% url 'homepage' %}" class="homepage-btn">Back to Homepage</a>
+    </div>
+</body>
+</html>

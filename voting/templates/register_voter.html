@@ -1,0 +1,122 @@
+<title> Register Voter </title>
+<form method="post" action="{% url 'register_voter' %}" class="register-form">
+    {% csrf_token %}
+    <h2>Register Voter</h2>
+    
+    <label for="voter_address">Voter Address:</label>
+    <input type="text" name="voter_address" id="voter_address" class="input-field" required>
+
+    <label for="voter_name">Voter Name:</label>
+    <input type="text" name="voter_name" id="voter_name" class="input-field" required>
+
+    <button type="submit" class="submit-btn">Register Voter</button>
+</form>
+
+<!-- Advanced CSS Styles -->
+<style>
+    /* Basic reset and background */
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(45deg, #6a11cb, #2575fc);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #fff;
+    }
+
+    /* Form styling */
+    .register-form {
+        width: 100%;
+        max-width: 500px;
+        padding: 30px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);  /* Adds a blur effect to the background */
+        transition: all 0.3s ease;
+    }
+
+    .register-form h2 {
+        text-align: center;
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    /* Label styling */
+    .register-form label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    /* Input fields styling */
+    .register-form .input-field {
+        width: 100%;
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+        background-color: #f9f9f9;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .register-form .input-field:focus {
+        border-color: #2575fc;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(37, 117, 252, 0.3);
+        outline: none;
+    }
+
+    .register-form .input-field::placeholder {
+        color: #bbb;
+    }
+
+    /* Submit button styling */
+    .register-form .submit-btn {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(45deg, #6a11cb, #2575fc);
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.3s ease, background 0.3s ease;
+        letter-spacing: 1px;
+    }
+
+    .register-form .submit-btn:hover {
+        transform: translateY(-5px);
+        background: linear-gradient(45deg, #2575fc, #6a11cb);
+    }
+
+    .register-form .submit-btn:active {
+        transform: translateY(0);
+        background: #2575fc;
+    }
+
+    .register-form .submit-btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    /* Optional: Add some spacing and hover effects on form elements */
+    .register-form .input-field:hover {
+        border-color: #2575fc;
+    }
+
+    /* Optional: Input field focus effects */
+    .register-form .input-field:focus {
+        box-shadow: 0 0 10px rgba(37, 117, 252, 0.4);
+        border-color: #2575fc;
+    }
+</style>

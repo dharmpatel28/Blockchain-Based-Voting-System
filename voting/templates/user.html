@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Voter Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #74ebd5, #acb6e5);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 40px 30px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #34495e;
+      margin-bottom: 5px;
+    }
+
+    h3 {
+      font-weight: 400;
+      color: #7f8c8d;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #555;
+      margin: 8px 0;
+    }
+
+    label {
+      display: block;
+      font-size: 16px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-top: 25px;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border 0.3s;
+    }
+
+    select:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s;
+    }
+
+    button:hover {
+      background: #0056b3;
+      transform: scale(1.05);
+    }
+
+    #voteSection {
+      display: none;
+      margin-top: 25px;
+    }
+
+    @media screen and (max-width: 600px) {
+      .card {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>Voter Dashboard</h1>
+    <h3 id="electionName">Election: Yet to Begin</h3>
+
+    <button onclick="connectWallet()">Connect Wallet</button>
+    <p id="wallet"></p>
+    <p id="voterName">Voter: Loading...</p>
+
+    <div id="voteSection">
+      <label>Select Party to Vote:</label>
+      <select id="partyId"></select>
+      <button onclick="vote()">Cast Vote</button>
+    </div>
+  </div>
+
+  <script>
+    let web3;
+    let contract;
+    const contractAddress = "0x4aC8126C870a08bd6961a713c6a88C7d6EdceA85";
+    const abi = [
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_electionName",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "partyId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "partyName",
+          "type": "string"
+        }
+      ],
+      "name": "PartyAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "voter",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "partyId",
+          "type": "uint256"
+        }
+      ],
+      "name": "VoteCasted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "voter",
+          "type": "address"
+        }
+      ],
+      "name": "VoterRegistered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "VotingEnded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "VotingStarted",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_name",
+          "type": "string"
+        }
+      ],
+      "name": "addCandidates",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "electionName",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "electionOfficial",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "endElection",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_partyId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getPartyVotes",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getWinner",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "winnerName",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "parties",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "voteCount",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_voter",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "_name",
+          "type": "string"
+        }
+      ],
+      "name": "registerVoter",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "startElection",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "state",
+      "outputs": [
+        {
+          "internalType": "enum Election.State",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalParties",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalVotes",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_partyId",
+          "type": "uint256"
+        }
+      ],
+      "name": "vote",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "voters",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "voted",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "votedPartyId",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ];
+
+    async function loadParties() {
+      const total = await contract.methods.totalParties().call();
+      const select = document.getElementById("partyId");
+      select.innerHTML = "";
+      for (let i = 0; i < total; i++) {
+        const party = await contract.methods.parties(i).call();
+        const option = document.createElement("option");
+        option.value = party.id;
+        option.text = `${party.name} (ID: ${party.id})`;
+        select.appendChild(option);
+      }
+    }
+
+    async function connectWallet() {
+      if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        try {
+          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+          document.getElementById("wallet").innerText = "Connected: " + accounts[0];
+          contract = new web3.eth.Contract(abi, contractAddress);
+
+          const name = await contract.methods.electionName().call();
+          document.getElementById("electionName").innerText = "Election: " + name;
+
+          const voter = await contract.methods.voters(accounts[0]).call();
+          if (voter.name && !voter.voted) {
+            document.getElementById("voterName").innerText = "Voter: " + voter.name;
+            document.getElementById("voteSection").style.display = "block";
+          } else if (voter.name && voter.voted) {
+            document.getElementById("voterName").innerText = "Voter: " + voter.name + " (Already Voted)";
+          } else {
+            document.getElementById("voterName").innerText = "Voter: Not registered";
+          }
+
+          await loadParties();
+        } catch (error) {
+          console.error("Wallet connection failed", error);
+        }
+
+        ethereum.on("accountsChanged", () => location.reload());
+      } else {
+        alert("Please install MetaMask to use this app.");
+      }
+    }
+
+    async function vote() {
+      const accounts = await web3.eth.getAccounts();
+      const partyId = document.getElementById("partyId").value;
+      await contract.methods.vote(partyId).send({ from: accounts[0] });
+      alert("Vote Casted Successfully!");
+      window.location.href = "/";
+    }
+  </script>
+</body>
+</html>
